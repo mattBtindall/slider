@@ -6,3 +6,10 @@ export function getAbsoluteHeight(el) {
   
   return el.offsetHeight + margins;
 }
+
+export function removeTransition(el, task) {
+  el.classList.add('no-transition');
+  task();
+  el.offsetHeight;
+  el.classList.remove('no-transition');
+}

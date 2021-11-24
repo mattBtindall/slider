@@ -1,11 +1,11 @@
 import { getAbsoluteHeight } from './utility.js';
 
-const slides = document.querySelectorAll('.slide');
-const slider = document.querySelector('.slider');
-const dotNav = document.querySelector('#dot-nav');
-let dots;
-let currentSlideIndex = 0;
-let nextSlideIndex;
+let slides, 
+    slider,
+    dotNav,
+    dots,
+    currentSlideIndex = 0,
+    nextSlideIndex;
 
 function removeTransition(el, task) {
     el.classList.add('no-transition');
@@ -15,12 +15,17 @@ function removeTransition(el, task) {
 }
 
 function initSlider() {
+    slides = document.querySelectorAll('.slide');
+    slider = document.querySelector('.slider');
+    dotNav = document.querySelector('#dot-nav');
+
     const slideWidth = parseInt(window.getComputedStyle(slides[0]).getPropertyValue('width').slice(0,-2));
     let offSets = [(slideWidth + slideWidth), (-slideWidth - slideWidth)];
     const sliderArrows = document.querySelectorAll('.slider-arrow');
 
     drawDotNav();
     setSliderHeight();
+    
     
     // sets all slides apart from the first to move out of the center position
     for (let i = 1; i < slides.length; ++i) {
@@ -48,15 +53,26 @@ function initSlider() {
         });
     });
 
-    // Add click events to the dot nav
-    dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
+    // Add click events to the dot nav using event delegation
+    dotNav.addEventListener('click', (e) => {
+        const dot = e.target;
+        if (dot.classList.contains('circle')) {
             let temp;
-            (nextSlideIndex - i > 0) ? temp = offSets[0] : temp = offSets[1];
-            nextSlideIndex = i;
+            (nextSlideIndex - dot.id > 0) ? temp = offSets[0] : temp = offSets[1];
+            nextSlideIndex = dot.id;
             animateSlider(temp);
-        });
+        }
     });
+
+    // Add click events to the dot nav
+    // dots.forEach((dot, i) => {
+    //     dot.addEventListener('click', () => {
+    //         let temp;
+    //         (nextSlideIndex - i > 0) ? temp = offSets[0] : temp = offSets[1];
+    //         nextSlideIndex = i;
+    //         animateSlider(temp);
+    //     });
+    // });
 }
 
 function setSliderHeight() {
@@ -69,17 +85,20 @@ function setSliderHeight() {
             tallestAbsolute = getAbsoluteHeight(slide);
         }
     });
+    console.log(tallest)
+    console.log(tallestAbsolute)
 
     slides.forEach(slide => slide.style.height = tallest+'px');
-    slider.style.height = `${tallestAbsolute}px`;
+    slider.style.height = tallestAbsolute+'px';
 }
 
 function drawDotNav() {
-    slides.forEach(() => {
+    for (let i = 0; i < slides.length; i++) {
         const dot = document.createElement('div');
         dot.classList.add('circle');
+        dot.id = i;
         dotNav.appendChild(dot);
-    });
+    }
 
     dots = document.querySelectorAll('.circle');
     updateDotNav();
@@ -111,4 +130,7 @@ function animateSlider(offSet) {
 
 setTimeout(() => {
     initSlider();
-}, 50);
+}, 100);
+window.onload = () => {
+    initSlider();
+}
