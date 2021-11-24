@@ -19,7 +19,6 @@ body, html {
     margin: auto;
     display: flex;
     align-items: center;
-    /* border: 2px solid black; */
 }
 
 .slide-container {

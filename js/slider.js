@@ -1,4 +1,4 @@
-'use strict';
+import { getAbsoluteHeight } from './utility.js';
 
 const slides = document.querySelectorAll('.slide');
 const slider = document.querySelector('.slider');
@@ -7,23 +7,12 @@ let dots;
 let currentSlideIndex = 0;
 let nextSlideIndex;
 
-function getAbsoluteHeight(el) {
-    if (typeof el === 'string') el = document.querySelector(el);
-
-    const styles = window.getComputedStyle(el);
-    const margins = styles.getPropertyValue('margin-top') + styles.getPropertyValue('marign-bottom');
-    
-    return el.offsetHeight + margins;
-}
-
 function removeTransition(el, task) {
     el.classList.add('no-transition');
     task();
     el.offsetHeight;
     el.classList.remove('no-transition');
 }
-
-const flipSign = n => n - (n * 2); 
 
 function initSlider() {
     const slideWidth = parseInt(window.getComputedStyle(slides[0]).getPropertyValue('width').slice(0,-2));
@@ -43,6 +32,7 @@ function initSlider() {
         });
     }
 
+    // Add click events to the slider arrows
     sliderArrows.forEach((arrow, i) => {
         arrow.addEventListener('click', (e) => {
             const arrow = e.target.getAttribute('name');
@@ -58,6 +48,7 @@ function initSlider() {
         });
     });
 
+    // Add click events to the dot nav
     dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
             let temp;
@@ -102,6 +93,8 @@ function updateDotNav() {
 function animateSlider(offSet) {
     const currentSlide = slides[currentSlideIndex],
         nextSlide = slides[nextSlideIndex];
+
+    const flipSign = (n) => n - (n * 2); 
 
     removeTransition(nextSlide, () => {
         nextSlide.style.transform = `translate(${flipSign(offSet)}px,0)`; 
