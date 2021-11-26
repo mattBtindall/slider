@@ -1,5 +1,6 @@
 export function getAbsoluteHeight(el) {
-  if (typeof el === 'string') el = document.querySelector(el);
+  el = (typeof el === 'string') ? document.querySelector(el) : el;
+  console.log(el);
 
   const styles = window.getComputedStyle(el);
   const margins = styles.getPropertyValue('margin-top') + styles.getPropertyValue('marign-bottom');

@@ -1,3 +1,7 @@
+:root {
+    --slide-margin-divider: 16px;
+}
+
 .no-transition {
     -webkit-transition: none !important;
     -moz-transition: none !important;
@@ -32,14 +36,14 @@ body, html {
 
 .slide {
     width: 100%;
-    transition: transform ease 600ms;
+    transition: transform ease-in-out 300ms;
     padding: 20px;
     margin: 0 auto;
     text-align: center;
 }
 
 .slide .star-rating {
-    margin-bottom: 16px;
+    margin-bottom: var(--slide-margin-divider);
     color: #F1C40F;
 }
 
@@ -60,7 +64,7 @@ body, html {
     display: inline-block;
     text-decoration: none;
     color: inherit;
-    margin: 16px 0;
+    margin: var(--slide-margin-divider) 0;
 }
 
 .slider-arrow {
@@ -76,11 +80,15 @@ body, html {
     width: 100%;
 }
 
-.circle {
+.slider-dot {
     width: 10px; height: 10px;
     border-radius: 50%;
     background: black;
     display: inline-block;
     cursor: pointer;
     margin: 0 10px;
+}
+
+.slide footer {
+    margin-bottom: var(--slide-margin-divider);
 }

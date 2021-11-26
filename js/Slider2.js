@@ -1,11 +1,11 @@
-import { getAbsoluteHeight, removeTransition } from './utility.js';
+import { removeTransition } from './utility.js';
 
 export class Slider {
   constructor() {
     this.slides = document.querySelectorAll('.slide'); 
     this.slider = document.querySelector('.slider');
     this.dotNav = document.querySelector('#dot-nav');
-    this.dots;
+    this.dots = [];
     this.currentSlideIndex = 0;
     this.nextSlideIndex;
 
@@ -17,16 +17,21 @@ export class Slider {
     let offSets = [(slideWidth + slideWidth), (-slideWidth - slideWidth)];
     const sliderArrows = document.querySelectorAll('.slider-arrow');
 
-    this.setSliderHeight();
+    // Set height of slides so they're all the same size
+    let tallest = 0;
+    this.slides.forEach(slide => {
+      if (slide.offsetHeight > tallest) tallest = slide.offsetHeight;
+    });
+    this.slides.forEach(slide => slide.style.height = tallest+'px');
 
     // Draw dot nav
     for (let i = 0; i < this.slides.length; i++) {
       const dot = document.createElement('div');
-      dot.classList.add('circle');
+      dot.classList.add('slider-dot');
       dot.id = i;
       this.dotNav.appendChild(dot);
+      this.dots.push(dot);
     }
-    this.dots = document.querySelectorAll('.circle');
     this.updateDotNav();
 
     // sets all slides apart from the first to move out of the center position
@@ -57,36 +62,31 @@ export class Slider {
 
     // Add click events to the dot nav using event delegation
     this.dotNav.addEventListener('click', (e) => {
+      // set - transition: transform ease-in-out 300ms;
       const dot = e.target;
-      if (dot.classList.contains('circle')) {
-        let temp;
-        (this.nextSlideIndex - dot.id > 0) ? temp = offSets[0] : temp = offSets[1];
-        this.nextSlideIndex = dot.id;
-        animateSlider(temp);
+      if (dot.classList.contains('slider-dot')) {
+        // let temp;
+        let offSet = (this.nextSlideIndex - dot.id > 0) ? offSets[0] : offSets[1];
+        // this.nextSlideIndex = dot.id;
+        // this.animateSlider(temp);
+
+        let temp2 = this.currentSlideIndex - dot.id;
+        if (temp2 > 0) {
+          console.log('positive'); // when pos needs to decrement
+        } else {
+          console.log('negative'); // when neg it needs to increment
+          this.nextSlideIndex = this.currentSlideIndex+1;
+          this.animateSlider(offSet);
+          if (this.nextSlideIndex !== parseInt(dot.id)) {
+            const intervalId = setInterval(() => {
+              if (this.nextSlideIndex === dot.id-1) clearInterval(intervalId);
+              this.nextSlideIndex = this.currentSlideIndex+1;
+              this.animateSlider(offSet);
+            }, 300);
+          }
+        }
       }
     });
-  }
-
-  setSliderHeight() {
-    let tallest = 0,
-      tallestAbsolute;
-
-    this.slides.forEach(slide => {
-      if (slide.offsetHeight > tallest) {
-        tallest = slide.offsetHeight;
-        tallestAbsolute = getAbsoluteHeight(slide);
-      }
-    });
-    console.log(tallest)
-    console.log(tallestAbsolute)
-
-    this.slides.forEach(slide => slide.style.height = tallest+'px');
-    this.slider.style.height = tallestAbsolute+'px';
-  }
-
-  updateDotNav() {
-    this.dots.forEach(dot => dot.style.background = '#A6ACAF');
-    this.dots[this.currentSlideIndex].style.background = 'black';
   }
 
   animateSlider(offSet) {
@@ -106,5 +106,10 @@ export class Slider {
     // set slide no
     this.currentSlideIndex = this.nextSlideIndex;
     this.updateDotNav();
+  }
+
+  updateDotNav() {
+    this.dots.forEach(dot => dot.style.background = '#A6ACAF');
+    this.dots[this.currentSlideIndex].style.background = 'black';
   }
 }
