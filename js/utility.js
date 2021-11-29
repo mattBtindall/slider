@@ -14,3 +14,5 @@ export function removeTransition(el, task) {
   el.offsetHeight;
   el.classList.remove('no-transition');
 }
+
+export const flipSign = (n) => n - (n * 2); 

@@ -1,4 +1,4 @@
-import { removeTransition } from './utility.js';
+import { removeTransition, flipSign } from './utility.js';
 
 export class Slider {
   constructor() {
@@ -60,30 +60,36 @@ export class Slider {
       });
     });
 
-    // Add click events to the dot nav using event delegation
-    this.dotNav.addEventListener('click', (e) => {
-      // set - transition: transform ease-in-out 300ms;
-      const dot = e.target;
-      if (dot.classList.contains('slider-dot')) {
-        // let temp;
-        let offSet = (this.nextSlideIndex - dot.id > 0) ? offSets[0] : offSets[1];
-        // this.nextSlideIndex = dot.id;
-        // this.animateSlider(temp);
 
-        let temp2 = this.currentSlideIndex - dot.id;
-        if (temp2 > 0) {
-          console.log('positive'); // when pos needs to decrement
-        } else {
-          console.log('negative'); // when neg it needs to increment
-          this.nextSlideIndex = this.currentSlideIndex+1;
-          this.animateSlider(offSet);
-          if (this.nextSlideIndex !== parseInt(dot.id)) {
-            const intervalId = setInterval(() => {
-              if (this.nextSlideIndex === dot.id-1) clearInterval(intervalId);
-              this.nextSlideIndex = this.currentSlideIndex+1;
-              this.animateSlider(offSet);
-            }, 300);
+    // Add click events to the dot nav using event delegation
+    // function animates multiple slide changes in a single click
+    const animateDotNav = (inc, dotId, offSet) => {
+      this.nextSlideIndex = this.currentSlideIndex+inc;
+      this.animateSlider(offSet);
+      if (this.nextSlideIndex !== dotId) {
+        const intervalId = setInterval(() => {
+          if (this.nextSlideIndex === dotId+flipSign(inc)) {
+            this.slides.forEach(slide => slide.style.transition = 'transform ease-in-out 600ms');
+            clearInterval(intervalId);
           }
+          this.nextSlideIndex = this.currentSlideIndex+inc;
+          this.animateSlider(offSet);
+        }, 300);
+      }
+    };
+    // Adds click event
+    this.dotNav.addEventListener('click', (e) => {
+      const dot = e.target;
+      const dotId = parseInt(dot.id);
+      let offSet = (this.nextSlideIndex - dot.id > 0) ? offSets[0] : offSets[1];
+
+      this.slides.forEach(slide => slide.style.transition = 'transform ease-in-out 300ms');
+      if (dot.classList.contains('slider-dot')) {
+        if (this.currentSlideIndex - dot.id > 0) { // decrement
+          animateDotNav(-1, dotId, offSet);
+        } 
+        else { 
+          animateDotNav(1, dotId, offSet);
         }
       }
     });
@@ -92,8 +98,6 @@ export class Slider {
   animateSlider(offSet) {
     const currentSlide = this.slides[this.currentSlideIndex],
       nextSlide = this.slides[this.nextSlideIndex];
-
-    const flipSign = (n) => n - (n * 2); 
 
     removeTransition(nextSlide, () => {
       nextSlide.style.transform = `translate(${flipSign(offSet)}px,0)`; 
